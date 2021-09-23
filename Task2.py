@@ -61,18 +61,14 @@ def generate_matrix():
     return square_matrix
 
 
-def binary_search(square_matrix):
+def start(square_matrix):
     key = int_input(text="Введіть шуканий елемент:\n")
     print(f'Матриця до сортування:\n{square_matrix}')
-    sort_mat(square_matrix)
+    sort_mat(square_matrix, key)
     print(f'Матриця після сортування:\n{square_matrix}')
-    for i in range(len(square_matrix)):
-        if square_matrix[i] == key:
-            return True
-    return False
 
 
-def sort_mat(mat):
+def sort_mat(mat, key):
     # Temporary matrix of size n^2
     n = len(mat)
     temp = [0] * (n * n)
@@ -88,15 +84,19 @@ def sort_mat(mat):
             count += 1
 
     # sort temp[]
-    for i in range(n):
-        for j in range(n - i - 1):
-            if temp[j] > temp[j + 1]:
-                temp[j], temp[j + 1] = temp[j + 1], temp[j]
+    swapped = True
+    while swapped:
+        swapped = False
+        for x in range(len(temp) - 1):
+            if temp[x] > temp[x + 1]:
+                # Swap the elements
+                temp[x], temp[x + 1] = temp[x + 1], temp[x]
                 count += 1
-
+                # Set True loop again
+                swapped = True
+    binary_search(temp, 0, len(temp) - 1, key)
     # copy the elements of temp[]
     # one by one in mat[][]
-
     k = 0
     for i in range(0, n):
         for j in range(0, n):
@@ -107,7 +107,23 @@ def sort_mat(mat):
     print(f'\nСортування виконано за {count} операцій\n')
 
 
+def binary_search(arr, low, high, x):
+    # Check base case
+    if high >= low:
+        mid = (high + low) // 2
+        if arr[mid] == x:
+            return mid
+        elif arr[mid] > x:
+            return binary_search(arr, low, mid - 1, x)
+        else:
+            return binary_search(arr, mid + 1, high, x)
+    else:
+        return -1
+
+
 while True:
     matrix = menu()
-    if binary_search(matrix) is True:
-        print("element founded")
+    if start(matrix) is False:
+        print("Елемент не знайдено")
+    else:
+        print("Елемент знайдено")
