@@ -11,9 +11,15 @@ def menu():
                 print('програма завершила свою роботу')
                 exit()
             elif n == "1":
-                return input_matrix()
+                size = get_input(prompt="Введіть розмір матриці:", cast=int, condition=lambda x: x > 0,
+                                 error_message="Розмір матриці повинен бути быльшим за нуль")
+                m = input_matrix(size)
+                return calculations(m)
             elif n == "2":
-                return generate_matrix()
+                size = get_input(prompt="Введіть розмір матриці:", cast=int, condition=lambda x: x > 0, 
+                                 error_message="Розмір матриці повинен бути быльшим за нуль")
+                m = generate_matrix(size)
+                return calculations(m)
             else:
                 n = int('error')
                 return n
@@ -22,89 +28,60 @@ def menu():
             continue
 
 
-def int_input(text=""):
+def get_input(prompt="", cast=None, condition=None, error_message=None):
     while True:
         try:
-            n = int(input(text))
-            return n
+            res = (cast or str)(input(prompt))
+            assert condition is None or condition(res)
+            return res
+        except (ValueError, Exception):
+            print(error_message or "Помилка. Спробуйте ще раз")
 
-        except ValueError:
-            print(" SYNTAX ERROR ")
-            continue
 
-
-def input_matrix():
-    # Initialize matrix
-    size = int_input(text="Введіть розмір матриці:")
-    square_matrix = []
-    # User input values
-    print("Введіть значення елементів матриці:")
-    for i in range(size):
+def input_matrix(n):
+    arr = []
+    print('Введіть значення матриці:')
+    for i in range(n):
         a = []
-        for j in range(size):
-            a.append(int_input())
-        square_matrix.append(a)
-    return square_matrix
+        for j in range(n):
+            a.append(get_input(cast=int))
+        arr.append(a)
+    return arr
 
 
-def generate_matrix():
-    # Initialize matrix
-    size = int_input(text="Введіть розмір матриці:")
-    square_matrix = []
-    # User input range of values
-    a = int_input(text="Введіть діапазон від:\n")
-    b = int_input(text="До:\n")
-    for i in range(size):
-        m = choices(range(a, b), k=size)
-        square_matrix.append(m)
-
-    return square_matrix
+def generate_matrix(n):
+    arr = []
+    from_ = get_input(prompt="Введіть діапазон від:", cast=int)
+    to_ = get_input(prompt="До:", cast=int, condition=lambda x: x > from_, error_message="Неправильний діапазон")
+    for i in range(n):
+        m = choices(range(from_, to_), k=n)
+        arr.append(m)
+    return arr
 
 
-def start(square_matrix):
-    key = int_input(text="Введіть шуканий елемент:\n")
-    print(f'Матриця до сортування:\n{square_matrix}')
-    sort_mat(square_matrix, key)
-    print(f'Матриця після сортування:\n{square_matrix}')
+def convert_to_array(sq_matrix):
+    temp = []
+    for i in range(len(sq_matrix)):
+        for j in range(len(sq_matrix)):
+            temp.append(sq_matrix[i][j])
+    return temp
 
 
-def sort_mat(mat, key):
-    # Temporary matrix of size n^2
-    n = len(mat)
-    temp = [0] * (n * n)
-    k = 0
+def sort_mat(array):
+    # sort
     count = 0
-
-    # Copy the elements of matrix
-    # one by one into temp[]
-    for i in range(0, n):
-        for j in range(0, n):
-            temp[k] = mat[i][j]
-            k += 1
-            count += 1
-
-    # sort temp[]
     swapped = True
     while swapped:
         swapped = False
-        for x in range(len(temp) - 1):
-            if temp[x] > temp[x + 1]:
+        for x in range(len(array) - 1):
+            if array[x] > array[x + 1]:
                 # Swap the elements
-                temp[x], temp[x + 1] = temp[x + 1], temp[x]
+                array[x], array[x + 1] = array[x + 1], array[x]
                 count += 1
                 # Set True loop again
                 swapped = True
-    binary_search(temp, 0, len(temp) - 1, key)
-    # copy the elements of temp[]
-    # one by one in mat[][]
-    k = 0
-    for i in range(0, n):
-        for j in range(0, n):
-            mat[i][j] = temp[k]
-            k += 1
-            count += 1
-
     print(f'\nСортування виконано за {count} операцій\n')
+    return array
 
 
 def binary_search(arr, low, high, x):
@@ -118,12 +95,20 @@ def binary_search(arr, low, high, x):
         else:
             return binary_search(arr, mid + 1, high, x)
     else:
+        print("Елемент не знайдено")
         return -1
 
 
+def calculations(m):
+    print("Матриця:", m)
+    m_arr = convert_to_array(m)
+    print("Масив:", m_arr)
+    m_arr = sort_mat(m_arr)
+    print("Посортований масив:", m_arr)
+    search_el = get_input(prompt="Введіть шуканий елемент:", cast=int)
+    print("Індекс елемента в масиві:", (binary_search(m_arr, 0, len(m_arr)-1, search_el)), "\n\n")
+
+
 while True:
-    matrix = menu()
-    if start(matrix) is False:
-        print("Елемент не знайдено")
-    else:
-        print("Елемент знайдено")
+    menu()
+
