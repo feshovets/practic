@@ -1,5 +1,4 @@
 from decorator import print_exception
-from random import randrange
 
 
 class Node:
@@ -48,12 +47,6 @@ class CustomLinkedList:
     def add_from_kb(self):
         data = int(input("Input value ->"))
         self.add_at_end(data)
-
-    def add_from_range(self):
-        print("Input range of number:")
-        range_from = int(input("From ->"))
-        range_to = int(input("To ->"))
-        self.add_at_end(randrange(range_from, range_to))
 
     @print_exception
     def add_at_end(self, data):
@@ -111,3 +104,7 @@ class CustomLinkedList:
             min_list.append(int(first.data)*int(second.data))
             count += 2
         return min(min_list)
+
+    def extend(self, iterable):
+        for elem in iterable:
+            self.add_at_end(elem)
