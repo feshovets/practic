@@ -1,44 +1,43 @@
-from LinkedList import CustomLinkedList
-from iterator import Iterator, generator
+from LinkedList import CustomLinkedList, get_valid_input
+from strategy import IteratorStrategy, FileStrategy
 
 
 def menu():
-    my_list = CustomLinkedList()
-    options_str = "_____Program menu_____\n"
-    options_str += "1 - add from keyboard \n"
-    options_str += "2 - print list\n"
-    options_str += "3 - find function\n"
-    options_str += "4 - delete element at pos\n"
-    options_str += "5 - add element at pos\n"
-    options_str += "6 - generate list using iterator\n"
-    options_str += "7 - generate list using generator\n"
-    options_str += "8 - exit\n"
+    linked_list = CustomLinkedList()
+    options_str = "_____Меню_____\n"
+    options_str += "1 - Використати стратегію 1 для вставки в список\n"
+    options_str += "2 - Використати стратегію 2 для вставки у список\n"
+    options_str += "3 - Генерувати дані\n"
+    options_str += "4 - Видалити елемент за вказаною позицією\n"
+    options_str += "5 - Видалити декілька елементів в межах початкової та кінцевої позиції\n"
+    options_str += "6 - Метод для роботи зі списком\n"
+    options_str += "7 - Вивести список\n"
+    options_str += "8 - Вихід\n"
     while True:
         option = input(options_str)
         if option == '1':
-            my_list.add_from_kb()
+            linked_list.set_strategy(IteratorStrategy())
         elif option == '2':
-            print(my_list)
+            linked_list.set_strategy(FileStrategy())
         elif option == '3':
-            f = my_list.find_min_element()
-            print(f)
+            linked_list.generate_data()
         elif option == '4':
-            pos = int(input("Input position ->"))
-            my_list.del_at_pos(pos)
+            pos = get_valid_input(prompt="Input position ->", cast=int, error_message="Invalid position",
+                                  condition=lambda x: x >= 0)
+            linked_list.del_at_pos(pos)
         elif option == '5':
-            pos = int(input("Input position ->"))
-            data = int(input("Input value ->"))
-            my_list.add_at_pos(pos, data)
+            lower_bound = get_valid_input(prompt="Input lower bound ->", cast=int, error_message="Invalid lower bound")
+            upper_bound = get_valid_input(prompt="Input upper bound ->", cast=int, error_message="Invalid upper bound",
+                                          condition=lambda x: x > lower_bound)
+            while lower_bound <= upper_bound:
+                linked_list.del_at_pos(lower_bound)
+                lower_bound += 1
         elif option == '6':
-            lower_bound = int(input("Input lower bound ->"))
-            upper_bound = int(input("Input upper bound ->"))
-            quantity = int(input("Input quantity of nodes ->"))
-            my_list.extend(Iterator(quantity, lower_bound, upper_bound))
+            linked_list.find_min_element()
         elif option == '7':
-            lower_bound = int(input("Input lower bound ->"))
-            upper_bound = int(input("Input upper bound ->"))
-            quantity = int(input("Input quantity of nodes ->"))
-            my_list.extend(generator(quantity, lower_bound, upper_bound))
+            print(linked_list)
+        elif option == '8':
+            exit()
 
 
 menu()
